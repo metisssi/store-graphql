@@ -8,6 +8,7 @@ export default gql`
         id: ID!
         username: String!
         email: String!
+        role: String! 
         createdAt: String!
         token: String!
     }
@@ -83,6 +84,7 @@ export default gql`
         # Auth
         register(registerInput: RegisterInput): User!
         login(username: String!, password: String!): User!
+        createAdmin(registerInput: RegisterInput): User! 
 
          # Categories
         createCategory(name: String!): Category!

@@ -15,6 +15,11 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+    role: {  // 👈 НОВОЕ ПОЛЕ
+        type: String,
+        enum: ['user', 'admin'],
+        default: 'user'
+    },
     createdAt: {
         type: String,
         default: () => new Date().toISOString()

@@ -1,6 +1,7 @@
 import Category from '../../models/Category.js';
 import Product from '../../models/Product.js';
 import checkAuth from '../../util/check-auth.js';
+import checkAdmin from '../../util/check-admin.js'; 
 import pkg from 'apollo-server';
 const { UserInputError } = pkg;
 
@@ -40,7 +41,7 @@ export default {
 
     Mutation: {
         async createCategory(_, { name }, context) {
-            const user = checkAuth(context)
+            const user = checkAdmin(context)
 
             if (name.trim() === '') {
                 throw new UserInputError('Category name must not be empty');
@@ -66,7 +67,7 @@ export default {
         },
 
         async deleteCategory(_, { categoryId }, context) {
-            const user = checkAuth(context)
+            const user = checkAdmin(context)
 
             try {
 

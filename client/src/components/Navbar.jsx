@@ -15,7 +15,18 @@ export default function Navbar() {
       <div className="flex-none gap-2">
         {user ? (
           <>
-            <span className="text-sm">Привет, {user.username}!</span>
+            {/* Показываем ссылку на админку если пользователь - админ */}
+            {user.role === 'admin' && (
+              <Link to="/admin" className="btn btn-ghost btn-sm">
+                ⚙️ Админ панель
+              </Link>
+            )}
+            
+            <span className="text-sm">
+              Привет, {user.username}! 
+              {user.role === 'admin' && <span className="badge badge-primary ml-2">Admin</span>}
+            </span>
+            
             <button onClick={logout} className="btn btn-ghost btn-sm">
               Выйти
             </button>

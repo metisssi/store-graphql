@@ -1,6 +1,7 @@
 import Product from '../../models/Product.js';
 import Category from '../../models/Category.js';
 import checkAuth from '../../util/check-auth.js';
+import checkAdmin from '../../util/check-admin.js';
 import pkg from 'apollo-server';
 const { UserInputError } = pkg;
 
@@ -55,7 +56,7 @@ export default {
     Mutation: {
         // Создать товар (требует авторизации)
         async createProduct(_, { productId, productInput }, context) {
-            const user = checkAuth(context);
+            const user = checkAdmin(context);
 
             const { name, description, price, categoryId, stock, image } = productInput;
 
@@ -104,7 +105,7 @@ export default {
 
         async updateProduct(_, { productId, productInput }, context) {
             // Проверяем авторизацию
-            const user = checkAuth(context);
+            const user = checkAdmin(context);
 
             const { name, description, price, categoryId, stock, image } = productInput;
 
@@ -164,7 +165,7 @@ export default {
         },
 
         async deleteProduct(_, { productId }, context) {
-            const user = checkAuth(context)
+            const user = checkAdmin(context)
 
             try {
                 const product = await Product.findById(productId)
@@ -185,7 +186,9 @@ export default {
                 }
                 throw new Error(err);
             }
-        }
+        },
+
+     
     },
 
 

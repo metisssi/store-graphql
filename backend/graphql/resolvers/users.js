@@ -21,7 +21,8 @@ function generateToken(user) {
         {
             id: user.id,
             email: user.email,
-            username: user.username
+            username: user.username,
+            role: user.role 
         },
         SECRET_KEY,
         { expiresIn: '1h' }
@@ -57,6 +58,7 @@ export default {
                 email,
                 username,
                 password,
+                role: 'user',
                 createdAt: new Date().toISOString()
             });
 
@@ -102,6 +104,46 @@ export default {
             return {
                 ...user._doc,
                 id: user._id,
+                token
+            };
+        },
+           async createAdmin(_, { registerInput: { username, email, password, confirmPassword } }) {
+            // Валидация данных
+            const { valid, errors } = validateRegisterInput(username, email, password, confirmPassword);
+
+            if (!valid) {
+                throw new UserInputError('Errors', { errors });
+            }
+
+            const user = await User.findOne({ username });
+            if (user) {
+                throw new UserInputError('Username is taken', {
+                    errors: {
+                        username: 'This username is taken'
+                    }
+                });
+            }
+
+            // Хэшируем пароль
+            password = await bcrypt.hash(password, 12);
+
+            // Создаём админа
+            const newAdmin = new User({
+                email,
+                username,
+                password,
+                role: 'admin',  // 👈 РОЛЬ АДМИНА!
+                createdAt: new Date().toISOString()
+            });
+
+            const res = await newAdmin.save();
+
+            // Генерируем токен
+            const token = generateToken(res);
+
+            return {
+                ...res._doc,
+                id: res._id,
                 token
             };
         }

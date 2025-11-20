@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useMutation } from '@apollo/client/react';  // 👈 useMutation из /react
-import { gql } from '@apollo/client';                // 👈 gql из базового пакета
-import { useNavigate, Link } from 'react-router-dom';
+import { useMutation } from '@apollo/client/react';
+import { gql } from '@apollo/client';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const LOGIN_MUTATION = gql`
@@ -10,13 +10,13 @@ const LOGIN_MUTATION = gql`
       id
       username
       email
+      role
       token
     }
   }
 `;
 
 export default function Login() {
-  const navigate = useNavigate();
   const { login } = useAuth();
   
   const [formData, setFormData] = useState({
@@ -28,8 +28,21 @@ export default function Login() {
 
   const [loginUser, { loading, error }] = useMutation(LOGIN_MUTATION, {
     onCompleted: (data) => {
+     
+      
+      // 1. Сохраняем пользователя
       login(data.login);
-      navigate('/');
+      
+      // 2. Жёсткий редирект через window.location
+      setTimeout(() => {
+        if (data.login.role === 'admin') {
+      
+          window.location.href = '/admin';
+        } else {
+          
+          window.location.href = '/';
+        }
+      }, 100);  // Небольшая задержка чтобы login() успел сработать
     }
   });
 
