@@ -133,7 +133,7 @@ export default gql`
         description: String!
         price: Float!
         image: String
-        category: Category!
+        category: Category
         stock: Int!
         createdAt: String!
     }

@@ -4,7 +4,9 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import AdminDashboard from './pages/AdminDashboard';  // 👈 ПРОВЕРЬ ЧТО ИМПОРТИРОВАН!
+import AdminDashboard from './pages/AdminDashboard';
+import ProductDetail from './pages/ProductDetail';
+import Cart from './pages/Cart'; // 👈 ДОБАВЬ
 
 const ProtectedRoute = ({ children }) => {
     const { user } = useAuth();
@@ -19,19 +21,14 @@ const GuestRoute = ({ children }) => {
 const AdminRoute = ({ children }) => {
     const { user } = useAuth();
     
-
-    
     if (!user) {
-      
         return <Navigate to="/login" replace />;
     }
     
     if (user.role !== 'admin') {
-        console.log('❌ Не админ, редирект на /');
         return <Navigate to="/" replace />;
     }
     
-  
     return children;
 };
 
@@ -42,7 +39,7 @@ function App() {
 
             <main className="container mx-auto px-4 py-8">
                 <Routes>
-                    {/* Главная страница */}
+                    {/* Home */}
                     <Route 
                         path="/" 
                         element={
@@ -52,7 +49,27 @@ function App() {
                         } 
                     />
 
-                    {/* Админ панель - ПРОВЕРЬ ЧТО ЭТО ЕСТЬ! */}
+                    {/* Product Detail */}
+                    <Route 
+                        path="/product/:productId" 
+                        element={
+                            <ProtectedRoute>
+                                <ProductDetail />
+                            </ProtectedRoute>
+                        } 
+                    />
+
+                    {/* Cart - 👈 ДОБАВЬ ЭТО! */}
+                    <Route 
+                        path="/cart" 
+                        element={
+                            <ProtectedRoute>
+                                <Cart />
+                            </ProtectedRoute>
+                        } 
+                    />
+
+                    {/* Admin Dashboard */}
                     <Route 
                         path="/admin" 
                         element={
@@ -62,7 +79,7 @@ function App() {
                         } 
                     />
 
-                    {/* Логин */}
+                    {/* Login */}
                     <Route
                         path="/login"
                         element={
@@ -72,7 +89,7 @@ function App() {
                         }
                     />
 
-                    {/* Регистрация */}
+                    {/* Register */}
                     <Route
                         path="/register"
                         element={

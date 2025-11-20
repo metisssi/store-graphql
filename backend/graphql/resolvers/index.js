@@ -9,7 +9,8 @@ export default {
     Query: {
         ...usersResolvers.Query,
         ...categoriesResolvers.Query,
-        ...productsResolvers.Query
+        ...productsResolvers.Query,
+        ...cartResolvers.Query 
 
     },
     Mutation: {
