@@ -38,6 +38,12 @@ const CREATE_CATEGORY = gql`
   }
 `;
 
+const DELETE_CATEGORY = gql`
+  mutation DeleteCategory($categoryId: ID!) {
+    deleteCategory(categoryId: $categoryId)
+  }
+`;
+
 const CREATE_PRODUCT = gql`
   mutation CreateProduct($productInput: CreateProductInput!) {
     createProduct(productInput: $productInput) {
@@ -48,13 +54,16 @@ const CREATE_PRODUCT = gql`
   }
 `;
 
+const DELETE_PRODUCT = gql`
+  mutation DeleteProduct($productId: ID!) {
+    deleteProduct(productId: $productId)
+  }
+`;
+
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('products'); // 'products' или 'categories'
-  
-  // Category Form
+  const [activeTab, setActiveTab] = useState('products');
   const [categoryName, setCategoryName] = useState('');
   
-  // Product Form
   const [productForm, setProductForm] = useState({
     name: '',
     description: '',
@@ -66,14 +75,27 @@ export default function AdminDashboard() {
 
   // Queries
   const { data: categoriesData, loading: categoriesLoading } = useQuery(GET_CATEGORIES);
-  const { data: productsData, loading: productsLoading, refetch: refetchProducts } = useQuery(GET_PRODUCTS);
+  const { data: productsData, loading: productsLoading } = useQuery(GET_PRODUCTS);
 
   // Mutations
   const [createCategory, { loading: createCategoryLoading }] = useMutation(CREATE_CATEGORY, {
     refetchQueries: [{ query: GET_CATEGORIES }],
     onCompleted: () => {
       setCategoryName('');
-      alert('Категория создана!');
+      alert('✅ Категория создана!');
+    },
+    onError: (error) => {
+      alert('❌ Ошибка: ' + error.message);
+    }
+  });
+
+  const [deleteCategory] = useMutation(DELETE_CATEGORY, {
+    refetchQueries: [{ query: GET_CATEGORIES }],
+    onCompleted: () => {
+      alert('✅ Категория удалена!');
+    },
+    onError: (error) => {
+      alert('❌ ' + error.message);
     }
   });
 
@@ -88,13 +110,33 @@ export default function AdminDashboard() {
         stock: '',
         image: ''
       });
-      alert('Товар создан!');
+      alert('✅ Товар создан!');
+    },
+    onError: (error) => {
+      alert('❌ Ошибка: ' + error.message);
+    }
+  });
+
+  const [deleteProduct] = useMutation(DELETE_PRODUCT, {
+    refetchQueries: [{ query: GET_PRODUCTS }],
+    onCompleted: () => {
+      alert('✅ Товар удален!');
+    },
+    onError: (error) => {
+      alert('❌ ' + error.message);
     }
   });
 
   const handleCreateCategory = (e) => {
     e.preventDefault();
+    if (categoryName.trim() === '') return;
     createCategory({ variables: { name: categoryName } });
+  };
+
+  const handleDeleteCategory = (categoryId, categoryName) => {
+    if (window.confirm(`Удалить категорию "${categoryName}"?`)) {
+      deleteCategory({ variables: { categoryId } });
+    }
   };
 
   const handleCreateProduct = (e) => {
@@ -111,6 +153,12 @@ export default function AdminDashboard() {
         }
       }
     });
+  };
+
+  const handleDeleteProduct = (productId, productName) => {
+    if (window.confirm(`Удалить товар "${productName}"?`)) {
+      deleteProduct({ variables: { productId } });
+    }
   };
 
   const handleProductFormChange = (e) => {
@@ -134,13 +182,13 @@ export default function AdminDashboard() {
           className={`tab ${activeTab === 'products' ? 'tab-active' : ''}`}
           onClick={() => setActiveTab('products')}
         >
-          Товары
+          📦 Товары
         </a>
         <a 
           className={`tab ${activeTab === 'categories' ? 'tab-active' : ''}`}
           onClick={() => setActiveTab('categories')}
         >
-          Категории
+          🏷️ Категории
         </a>
       </div>
 
@@ -150,7 +198,7 @@ export default function AdminDashboard() {
           {/* Create Product Form */}
           <div className="card bg-base-100 shadow-xl">
             <div className="card-body">
-              <h2 className="card-title">Создать товар</h2>
+              <h2 className="card-title">➕ Создать товар</h2>
               
               <form onSubmit={handleCreateProduct} className="space-y-4">
                 <div className="form-control">
@@ -176,6 +224,7 @@ export default function AdminDashboard() {
                     value={productForm.description}
                     onChange={handleProductFormChange}
                     className="textarea textarea-bordered"
+                    rows="3"
                     required
                   />
                 </div>
@@ -183,7 +232,7 @@ export default function AdminDashboard() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="form-control">
                     <label className="label">
-                      <span className="label-text">Цена</span>
+                      <span className="label-text">Цена ($)</span>
                     </label>
                     <input
                       type="number"
@@ -243,6 +292,25 @@ export default function AdminDashboard() {
                     className="input input-bordered"
                     placeholder="https://example.com/image.jpg"
                   />
+                  <label className="label">
+                    <span className="label-text-alt">
+                      💡 <a href="https://imgbb.com/" target="_blank" rel="noreferrer" className="link link-primary">Загрузить на ImgBB</a>
+                    </span>
+                  </label>
+                  
+                  {productForm.image && (
+                    <div className="mt-2">
+                      <p className="text-sm mb-1">Превью:</p>
+                      <img 
+                        src={productForm.image} 
+                        alt="Preview" 
+                        className="h-32 w-32 object-cover rounded-lg border"
+                        onError={(e) => {
+                          e.target.src = 'https://via.placeholder.com/300';
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <button 
@@ -250,7 +318,7 @@ export default function AdminDashboard() {
                   className="btn btn-primary w-full"
                   disabled={createProductLoading}
                 >
-                  {createProductLoading ? 'Создание...' : 'Создать товар'}
+                  {createProductLoading ? 'Создание...' : '✨ Создать товар'}
                 </button>
               </form>
             </div>
@@ -259,7 +327,7 @@ export default function AdminDashboard() {
           {/* Products List */}
           <div className="card bg-base-100 shadow-xl">
             <div className="card-body">
-              <h2 className="card-title">Список товаров</h2>
+              <h2 className="card-title">📋 Список товаров ({productsData?.getProducts.length || 0})</h2>
               
               {productsLoading ? (
                 <div className="flex justify-center py-8">
@@ -268,13 +336,29 @@ export default function AdminDashboard() {
               ) : (
                 <div className="space-y-3 max-h-[600px] overflow-y-auto">
                   {productsData?.getProducts.map((product) => (
-                    <div key={product.id} className="card bg-base-200">
+                    <div key={product.id} className="card bg-base-200 hover:bg-base-300 transition">
                       <div className="card-body p-4">
-                        <h3 className="font-bold">{product.name}</h3>
-                        <p className="text-sm text-base-content/60">{product.description}</p>
-                        <div className="flex justify-between items-center mt-2">
-                          <span className="font-bold">${product.price}</span>
-                          <span className="badge">{product.category.name}</span>
+                        <div className="flex gap-3">
+                          <img 
+                            src={product.image} 
+                            alt={product.name}
+                            className="w-16 h-16 object-cover rounded"
+                          />
+                          <div className="flex-1">
+                            <h3 className="font-bold">{product.name}</h3>
+                            <p className="text-sm text-base-content/60 line-clamp-1">{product.description}</p>
+                            <div className="flex gap-2 items-center mt-1">
+                              <span className="font-bold text-primary">${product.price}</span>
+                              <span className="badge badge-sm">{product.category.name}</span>
+                              <span className="text-xs">Stock: {product.stock}</span>
+                            </div>
+                          </div>
+                          <button 
+                            onClick={() => handleDeleteProduct(product.id, product.name)}
+                            className="btn btn-error btn-sm btn-circle"
+                          >
+                            🗑️
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -292,7 +376,7 @@ export default function AdminDashboard() {
           {/* Create Category Form */}
           <div className="card bg-base-100 shadow-xl">
             <div className="card-body">
-              <h2 className="card-title">Создать категорию</h2>
+              <h2 className="card-title">➕ Создать категорию</h2>
               
               <form onSubmit={handleCreateCategory} className="space-y-4">
                 <div className="form-control">
@@ -304,7 +388,7 @@ export default function AdminDashboard() {
                     value={categoryName}
                     onChange={(e) => setCategoryName(e.target.value)}
                     className="input input-bordered"
-                    placeholder="Электроника"
+                    placeholder="Например: Электроника, Одежда, Книги"
                     required
                   />
                 </div>
@@ -314,16 +398,32 @@ export default function AdminDashboard() {
                   className="btn btn-primary w-full"
                   disabled={createCategoryLoading}
                 >
-                  {createCategoryLoading ? 'Создание...' : 'Создать категорию'}
+                  {createCategoryLoading ? 'Создание...' : '✨ Создать категорию'}
                 </button>
               </form>
+
+              {/* Примеры */}
+              <div className="mt-4">
+                <p className="text-sm text-base-content/60 mb-2">💡 Примеры категорий:</p>
+                <div className="flex flex-wrap gap-2">
+                  {['Электроника', 'Одежда', 'Книги', 'Спорт', 'Дом'].map(cat => (
+                    <button 
+                      key={cat}
+                      onClick={() => setCategoryName(cat)}
+                      className="badge badge-outline badge-lg cursor-pointer hover:badge-primary"
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Categories List */}
           <div className="card bg-base-100 shadow-xl">
             <div className="card-body">
-              <h2 className="card-title">Список категорий</h2>
+              <h2 className="card-title">📋 Список категорий ({categoriesData?.getCategories.length || 0})</h2>
               
               {categoriesLoading ? (
                 <div className="flex justify-center py-8">
@@ -332,15 +432,29 @@ export default function AdminDashboard() {
               ) : (
                 <div className="space-y-3">
                   {categoriesData?.getCategories.map((category) => (
-                    <div key={category.id} className="card bg-base-200">
-                      <div className="card-body p-4">
-                        <h3 className="font-bold">{category.name}</h3>
-                        <p className="text-sm text-base-content/60">
-                          Создана: {new Date(category.createdAt).toLocaleDateString()}
-                        </p>
+                    <div key={category.id} className="card bg-base-200 hover:bg-base-300 transition">
+                      <div className="card-body p-4 flex-row justify-between items-center">
+                        <div>
+                          <h3 className="font-bold text-lg">🏷️ {category.name}</h3>
+                          <p className="text-sm text-base-content/60">
+                            Создана: {new Date(category.createdAt).toLocaleDateString('ru-RU')}
+                          </p>
+                        </div>
+                        <button 
+                          onClick={() => handleDeleteCategory(category.id, category.name)}
+                          className="btn btn-error btn-sm btn-circle"
+                        >
+                          🗑️
+                        </button>
                       </div>
                     </div>
                   ))}
+
+                  {categoriesData?.getCategories.length === 0 && (
+                    <div className="text-center py-8">
+                      <p className="text-base-content/60">Категорий пока нет</p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

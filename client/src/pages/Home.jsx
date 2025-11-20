@@ -52,32 +52,76 @@ export default function Home() {
       </div>
 
       {/* Products Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {data.getProducts.map((product) => (
-          <div key={product.id} className="card bg-base-100 shadow-xl">
-            <figure>
+          <div key={product.id} className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+            {/* Картинка с фиксированной высотой */}
+            <figure className="relative h-64 overflow-hidden bg-base-200">
               <img 
                 src={product.image} 
                 alt={product.name}
-                className="h-48 w-full object-cover"
+                className="w-full h-full object-contain p-4 hover:scale-105 transition-transform duration-300"
+                onError={(e) => {
+                  e.target.src = 'https://via.placeholder.com/400x400?text=No+Image';
+                }}
               />
+              
+              {/* Badge на картинке */}
+              {product.stock < 5 && product.stock > 0 && (
+                <div className="badge badge-warning absolute top-2 right-2">
+                  Осталось мало!
+                </div>
+              )}
+              {product.stock === 0 && (
+                <div className="badge badge-error absolute top-2 right-2">
+                  Нет в наличии
+                </div>
+              )}
             </figure>
-            <div className="card-body">
-              <h2 className="card-title">{product.name}</h2>
-              <p className="text-sm text-base-content/60">{product.description}</p>
+
+            <div className="card-body p-4">
+              {/* Категория */}
+              <div className="badge badge-outline badge-sm mb-2">
+                {product.category.name}
+              </div>
+
+              {/* Название товара */}
+              <h2 className="card-title text-lg line-clamp-2 min-h-[3.5rem]">
+                {product.name}
+              </h2>
+
+              {/* Описание */}
+              <p className="text-sm text-base-content/60 line-clamp-2 min-h-[2.5rem]">
+                {product.description}
+              </p>
               
-              <div className="badge badge-outline">{product.category.name}</div>
-              
-              <div className="flex justify-between items-center mt-4">
-                <span className="text-2xl font-bold">${product.price}</span>
-                <span className="text-sm">
-                  Осталось: <span className="font-semibold">{product.stock}</span>
-                </span>
+              {/* Цена и количество */}
+              <div className="flex justify-between items-center mt-4 pt-4 border-t">
+                <div>
+                  <p className="text-xs text-base-content/60">Цена</p>
+                  <span className="text-2xl font-bold text-primary">
+                    ${product.price}
+                  </span>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-base-content/60">В наличии</p>
+                  <span className={`text-lg font-semibold ${
+                    product.stock === 0 ? 'text-error' : 
+                    product.stock < 5 ? 'text-warning' : 
+                    'text-success'
+                  }`}>
+                    {product.stock}
+                  </span>
+                </div>
               </div>
               
-              <div className="card-actions justify-end mt-4">
-                <button className="btn btn-primary btn-sm">
-                  Добавить в корзину
+              {/* Кнопка */}
+              <div className="card-actions justify-stretch mt-4">
+                <button 
+                  className="btn btn-primary btn-block"
+                  disabled={product.stock === 0}
+                >
+                  {product.stock === 0 ? 'Нет в наличии' : '🛒 В корзину'}
                 </button>
               </div>
             </div>
@@ -88,6 +132,7 @@ export default function Home() {
       {/* Empty State */}
       {data.getProducts.length === 0 && (
         <div className="text-center py-16">
+          <div className="text-6xl mb-4">📦</div>
           <h3 className="text-2xl font-bold mb-2">Товаров пока нет</h3>
           <p className="text-base-content/60">
             {user.role === 'admin' 
