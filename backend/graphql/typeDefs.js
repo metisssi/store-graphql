@@ -41,6 +41,84 @@ export default gql`
         image: String
     }
 
+     # 🛒 ORDER TYPES - НОВОЕ!
+    
+    type OrderItem {
+        product: ID!
+        name: String!
+        price: Float!
+        quantity: Int!
+        image: String
+    }
+
+       type ShippingAddress {
+        fullName: String!
+        address: String!
+        city: String!
+        postalCode: String!
+        country: String!
+        phone: String!
+    }
+
+        type Order {
+        id: ID!
+        user: User!
+        items: [OrderItem!]!
+        totalAmount: Float!
+        status: String!
+        shippingAddress: ShippingAddress!
+        paymentMethod: String!
+        isPaid: Boolean!
+        paidAt: String
+        isDelivered: Boolean!
+        deliveredAt: String
+        createdAt: String!
+    }
+
+
+     # 🛒 CART TYPES - НОВОЕ!
+    
+    type CartItem {
+        product: Product!
+        quantity: Int!
+    }
+
+    type Cart {
+        id: ID!
+        user: User!
+        items: [CartItem!]!
+        updatedAt: String!
+    }
+
+    input CartItemInput {
+        productId: ID!
+        quantity: Int!
+    }
+
+
+    # Inputs для заказов
+    input OrderItemInput {
+        productId: ID!
+        quantity: Int!
+    }
+
+      input ShippingAddressInput {
+        fullName: String!
+        address: String!
+        city: String!
+        postalCode: String!
+        country: String!
+        phone: String!
+    }
+
+      input CreateOrderInput {
+        items: [OrderItemInput!]!
+        shippingAddress: ShippingAddressInput!
+        paymentMethod: String!
+    }
+
+    
+
        # Category Types
     type Category {
         id: ID!
@@ -75,6 +153,14 @@ export default gql`
         getProducts: [Product]
         getProduct(productId: ID!): Product
         getProductsByCategory(categoryId: ID!): [Product]
+
+        # Orders - НОВОЕ!
+        getMyOrders: [Order!]!
+        getOrder(orderId: ID!): Order!
+        getAllOrders: [Order!]!  # Только для админа
+
+        # Cart - НОВОЕ!
+        getMyCart: Cart
     }
 
      # Мутации (изменять данные)
@@ -96,6 +182,18 @@ export default gql`
         createProduct(productInput: CreateProductInput): Product!
         updateProduct(productId: ID!, productInput: UpdateProductInput!): Product!
         deleteProduct(productId: ID!): String!
+
+         # Orders - НОВОЕ!
+        createOrder(orderInput: CreateOrderInput!): Order!
+        updateOrderStatus(orderId: ID!, status: String!): Order!  # Для админа
+        cancelOrder(orderId: ID!): Order!
+
+
+        # Cart - НОВОЕ!
+        addToCart(productId: ID!, quantity: Int): Cart!
+        removeFromCart(productId: ID!): Cart!
+        updateCartItemQuantity(productId: ID!, quantity: Int!): Cart!
+        clearCart: Cart!
      }
 
       # Subscriptions
