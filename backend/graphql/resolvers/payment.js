@@ -1,34 +1,30 @@
 import Stripe from 'stripe';
 import checkAuth from '../../util/check-auth.js';
 import Cart from '../../models/Cart.js';
+import Order from '../../models/Order.js';
 import pkg from 'apollo-server';
 const { UserInputError } = pkg;
-import Order from '../../models/Order.js'
 
-
-const stripe = new Stripe(proccess.env.STRIPE_SECRET_KEY)
-
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);  // 👈 Исправлено!
 
 export default {
     Mutation: {
-        async craetePaymentIntent(_, __, context) {
+        async createPaymentIntent(_, __, context) {  // 👈 Исправлено!
             const user = checkAuth(context);
 
             try {
                 // Получаем корзину пользователя
                 const cart = await Cart.findOne({ user: user.id })
-                    .populate('items.product')
+                    .populate('items.product');
 
-                if (!cart || cart.items.lenght === 0) {
+                if (!cart || cart.items.length === 0) {  // 👈 Исправлено!
                     throw new UserInputError('Cart is empty');
                 }
-
 
                 // Считаем общую сумму
                 const amount = cart.items.reduce((total, item) => {
                     return total + (item.product.price * item.quantity);
                 }, 0);
-
 
                 // Создаём Payment Intent в Stripe
                 const paymentIntent = await stripe.paymentIntents.create({
@@ -38,12 +34,12 @@ export default {
                         userId: user.id,
                         cartId: cart.id
                     }
-                })
+                });
 
                 return {
                     clientSecret: paymentIntent.client_secret,
                     amount: amount
-                }
+                };
 
             } catch (err) {
                 console.error('❌ Error creating payment intent:', err);
@@ -52,35 +48,31 @@ export default {
         },
 
         // Создать заказ после успешной оплаты
-
         async createOrderAfterPayment(_, { paymentIntentId, shippingAddress }, context) {
-            const user = checkAuth(context)
+            const user = checkAuth(context);
 
             try {
                 // Проверяем что оплата прошла успешно
-
-                const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId)
+                const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
 
                 if (paymentIntent.status !== 'succeeded') {
                     throw new UserInputError('Payment not completed');
                 }
 
                 // Получаем корзину
-
                 const cart = await Cart.findOne({ user: user.id })
-                    .populate('items.product')
+                    .populate('items.product');
 
-                if (!cart || cart.items.length === 0) {
+                if (!cart || cart.items.length === 0) {  // 👈 Исправлено!
                     throw new UserInputError('Cart is empty');
                 }
 
-                // Создаём заказ (используем существующую логику из orders.js)
-
+                // Создаём заказ
                 const orderItems = [];
                 let totalAmount = 0;
 
                 for (const item of cart.items) {
-                    const product = item.product
+                    const product = item.product;
 
                     // Проверяем наличие
                     if (product.stock < item.quantity) {
@@ -109,26 +101,24 @@ export default {
                     user: user.id,
                     items: orderItems,
                     totalAmount: totalAmount,
-
-                    // Payment info
                     paymentMethod: 'card',
                     isPaid: true,
                     paidAt: new Date().toISOString(),
-                    paymentIntentId: paymentIntent.id,      // 👈 ID из Stripe
-                    paymentStatus: 'succeeded',             // 👈 Статус
-
-                    // Shipping
+                    paymentIntentId: paymentIntent.id,
+                    paymentStatus: 'succeeded',
                     shippingAddress: shippingAddress,
-
-                    // Status
                     status: 'pending',
-
                     createdAt: new Date().toISOString()
                 });
 
+                const order = await newOrder.save();
+                await order.populate('user');
 
-                const order = await newOrder.save()
-                await order.populate('user')
+                // Очищаем корзину
+                cart.items = [];
+                await cart.save();
+
+                return order;
 
             } catch (err) {
                 console.error('❌ Error creating order:', err);
@@ -136,4 +126,4 @@ export default {
             }
         }
     }
-}
+};

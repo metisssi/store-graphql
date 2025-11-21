@@ -7,6 +7,7 @@ import Register from './pages/Register';
 import AdminDashboard from './pages/AdminDashboard';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart'; // 👈 ДОБАВЬ
+import Checkout from './pages/Checkout';
 
 const ProtectedRoute = ({ children }) => {
     const { user } = useAuth();
@@ -20,15 +21,15 @@ const GuestRoute = ({ children }) => {
 
 const AdminRoute = ({ children }) => {
     const { user } = useAuth();
-    
+
     if (!user) {
         return <Navigate to="/login" replace />;
     }
-    
+
     if (user.role !== 'admin') {
         return <Navigate to="/" replace />;
     }
-    
+
     return children;
 };
 
@@ -40,43 +41,43 @@ function App() {
             <main className="container mx-auto px-4 py-8">
                 <Routes>
                     {/* Home */}
-                    <Route 
-                        path="/" 
+                    <Route
+                        path="/"
                         element={
                             <ProtectedRoute>
                                 <Home />
                             </ProtectedRoute>
-                        } 
+                        }
                     />
 
                     {/* Product Detail */}
-                    <Route 
-                        path="/product/:productId" 
+                    <Route
+                        path="/product/:productId"
                         element={
                             <ProtectedRoute>
                                 <ProductDetail />
                             </ProtectedRoute>
-                        } 
+                        }
                     />
 
                     {/* Cart - 👈 ДОБАВЬ ЭТО! */}
-                    <Route 
-                        path="/cart" 
+                    <Route
+                        path="/cart"
                         element={
                             <ProtectedRoute>
                                 <Cart />
                             </ProtectedRoute>
-                        } 
+                        }
                     />
 
                     {/* Admin Dashboard */}
-                    <Route 
-                        path="/admin" 
+                    <Route
+                        path="/admin"
                         element={
                             <AdminRoute>
                                 <AdminDashboard />
                             </AdminRoute>
-                        } 
+                        }
                     />
 
                     {/* Login */}
@@ -96,6 +97,15 @@ function App() {
                             <GuestRoute>
                                 <Register />
                             </GuestRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/checkout"
+                        element={
+                            <ProtectedRoute>
+                                <Checkout />
+                            </ProtectedRoute>
                         }
                     />
                 </Routes>

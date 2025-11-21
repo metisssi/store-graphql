@@ -154,7 +154,7 @@ export default gql`
     }
 
     type PaymentIntent {
-        clientString: String!
+        clientSecret: String! 
         amount: Float!
     }
 

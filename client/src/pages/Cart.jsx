@@ -324,7 +324,10 @@ export default function Cart() {
                                     </div>
                                 </div>
 
-                                <button className="btn btn-primary btn-block mt-6">
+                                <button
+                                    onClick={() => navigate('/checkout')}  // 👈 Добавь navigate
+                                    className="btn btn-primary btn-block mt-6"
+                                >
                                     Proceed to Checkout
                                 </button>
 
