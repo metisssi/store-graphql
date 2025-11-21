@@ -6,14 +6,14 @@ const orderItemSchema = new Schema({
         ref: 'Product',
         required: true
     },
-    name: String,          // Сохраняем название на момент заказа
-    price: Number,         // Сохраняем цену на момент заказа
+    name: String,          
+    price: Number,         
     quantity: {
         type: Number,
         required: true,
         min: 1
     },
-    image: String          // Сохраняем картинку на момент заказа
+    image: String          
 });
 
 const orderSchema = new Schema({
@@ -22,6 +22,7 @@ const orderSchema = new Schema({
         ref: 'User',
         required: true
     },
+    
     items: [orderItemSchema],
     
     totalAmount: {
@@ -29,21 +30,7 @@ const orderSchema = new Schema({
         required: true
     },
     
-    status: {
-        type: String,
-        enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
-        default: 'pending'
-    },
-    
-    shippingAddress: {
-        fullName: String,
-        address: String,
-        city: String,
-        postalCode: String,
-        country: String,
-        phone: String
-    },
-    
+    // 💰 ПЛАТЁЖНАЯ ИНФОРМАЦИЯ
     paymentMethod: {
         type: String,
         enum: ['card', 'cash', 'paypal'],
@@ -57,6 +44,34 @@ const orderSchema = new Schema({
     
     paidAt: String,
     
+    // 🆕 STRIPE PAYMENT INFO
+    paymentIntentId: {          // ID платежа из Stripe
+        type: String
+    },
+    
+    paymentStatus: {            // Статус оплаты
+        type: String,
+        enum: ['pending', 'succeeded', 'failed', 'refunded'],
+        default: 'pending'
+    },
+    
+    // 📦 СТАТУС ЗАКАЗА
+    status: {
+        type: String,
+        enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
+        default: 'pending'
+    },
+    
+    // 🚚 ДОСТАВКА
+    shippingAddress: {
+        fullName: String,
+        address: String,
+        city: String,
+        postalCode: String,
+        country: String,
+        phone: String
+    },
+    
     isDelivered: {
         type: Boolean,
         default: false
@@ -64,10 +79,31 @@ const orderSchema = new Schema({
     
     deliveredAt: String,
     
+    // 📝 ДОПОЛНИТЕЛЬНАЯ ИНФОРМАЦИЯ
+    trackingNumber: {           // 🆕 Трекинг номер для отслеживания
+        type: String
+    },
+    
+    notes: {                    // 🆕 Заметки/комментарии
+        type: String
+    },
+    
+    // 📅 ВРЕМЕННЫЕ МЕТКИ
     createdAt: {
         type: String,
         default: () => new Date().toISOString()
+    },
+    
+    updatedAt: {                // 🆕 Последнее обновление
+        type: String,
+        default: () => new Date().toISOString()
     }
+});
+
+// 🆕 Middleware для обновления updatedAt
+orderSchema.pre('save', function(next) {
+    this.updatedAt = new Date().toISOString();
+    next();
 });
 
 export default model('Order', orderSchema);

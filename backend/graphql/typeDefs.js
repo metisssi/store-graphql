@@ -60,20 +60,35 @@ export default gql`
         phone: String!
     }
 
-        type Order {
-        id: ID!
-        user: User!
-        items: [OrderItem!]!
-        totalAmount: Float!
-        status: String!
-        shippingAddress: ShippingAddress!
-        paymentMethod: String!
-        isPaid: Boolean!
-        paidAt: String
-        isDelivered: Boolean!
-        deliveredAt: String
-        createdAt: String!
-    }
+    type Order {
+    id: ID!
+    user: User!
+    items: [OrderItem!]!
+    totalAmount: Float!
+    
+    # Payment
+    paymentMethod: String!
+    isPaid: Boolean!
+    paidAt: String
+    paymentIntentId: String        # 🆕
+    paymentStatus: String!         # 🆕
+    
+    # Order Status
+    status: String!
+    
+    # Shipping
+    shippingAddress: ShippingAddress!
+    isDelivered: Boolean!
+    deliveredAt: String
+    trackingNumber: String         # 🆕
+    
+    # Additional
+    notes: String                  # 🆕
+    
+    # Timestamps
+    createdAt: String!
+    updatedAt: String!             # 🆕
+}
 
 
      # 🛒 CART TYPES - НОВОЕ!
@@ -138,6 +153,11 @@ export default gql`
         createdAt: String!
     }
 
+    type PaymentIntent {
+        clientString: String!
+        amount: Float!
+    }
+
 
 
     # Запросы (читать данные)
@@ -194,6 +214,15 @@ export default gql`
         removeFromCart(productId: ID!): Cart!
         updateCartItemQuantity(productId: ID!, quantity: Int!): Cart!
         clearCart: Cart!
+
+        # Payment
+        createPaymentIntent: PaymentIntent!
+
+        createOrderAfterPayment(
+        paymentIntentId: String!
+        shippingAddress: ShippingAddressInput!
+    ): Order!
+    
      }
 
       # Subscriptions

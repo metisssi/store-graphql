@@ -3,7 +3,7 @@ import categoriesResolvers from './categories.js';
 import productsResolvers from './products.js'
 import ordersResolvers from './orders.js';
 import cartResolvers from './cart.js'; 
-
+import paymentResolvers from './payment.js';
 
 export default {
     Query: {
@@ -18,7 +18,8 @@ export default {
         ...categoriesResolvers.Mutation,
         ...productsResolvers.Mutation,
         ...ordersResolvers.Mutation,
-        ...cartResolvers.Mutation 
+        ...cartResolvers.Mutation,
+        ...paymentResolvers.Mutation
 
     },
     Subscription: {
