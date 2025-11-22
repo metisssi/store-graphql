@@ -10,7 +10,8 @@ export default {
         ...usersResolvers.Query,
         ...categoriesResolvers.Query,
         ...productsResolvers.Query,
-        ...cartResolvers.Query 
+        ...cartResolvers.Query,
+        ...ordersResolvers.Query 
 
     },
     Mutation: {
@@ -19,7 +20,8 @@ export default {
         ...productsResolvers.Mutation,
         ...ordersResolvers.Mutation,
         ...cartResolvers.Mutation,
-        ...paymentResolvers.Mutation
+        ...paymentResolvers.Mutation,
+      
 
     },
     Subscription: {

@@ -8,6 +8,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart'; // 👈 ДОБАВЬ
 import Checkout from './pages/Checkout';
+import OrdersDashboard from './pages/OrdersDashboard'
 
 const ProtectedRoute = ({ children }) => {
     const { user } = useAuth();
@@ -113,7 +114,7 @@ function App() {
                         path="/orders"
                         element={
                             <AdminRoute>
-                                <Orders />
+                                <OrdersDashboard />
                             </AdminRoute>
                         }
                     />

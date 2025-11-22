@@ -23,20 +23,7 @@ export default {
             }
         },
 
-         // Получить все заказы (только для админа) - НОВОЕ!
-        async getAllOrders(_, __, context) {
-            const user = checkAdmin(context); // Проверяем что пользователь - админ
-            
-            try {
-                const orders = await Order.find()
-                    .populate('user')
-                    .sort({ createdAt: -1 });
-                
-                return orders;
-            } catch (err) {
-                throw new Error(err.message);
-            }
-        },
+
 
          // Получить все заказы (только для админа) - НОВОЕ!
         async getAllOrders(_, __, context) {
@@ -47,7 +34,7 @@ export default {
                     .populate('user')
                     .sort({ createdAt: -1 });
                 
-                return orders;
+                return orders || [];
             } catch (err) {
                 throw new Error(err.message);
             }

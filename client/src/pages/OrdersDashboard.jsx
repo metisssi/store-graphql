@@ -46,7 +46,7 @@ const UPDATE_ORDER_STATUS = gql`
   }
 `;
 
-export default function Orders() {
+export default function OrdersDashboard() {
   const [selectedStatus, setSelectedStatus] = useState('all');
   
   const { loading, error, data, refetch } = useQuery(GET_ALL_ORDERS);
