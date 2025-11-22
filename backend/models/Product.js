@@ -29,6 +29,14 @@ const productSchema = new Schema({
     createdAt: {
         type: String,
         default: () => new Date().toISOString()
+    },
+    averageRating: {
+        type: Number,
+        default: 0
+    },
+    reviewCount: {
+        type: Number,
+        default: 0
     }
 });
 

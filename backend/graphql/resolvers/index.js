@@ -2,8 +2,10 @@ import usersResolvers from './users.js'
 import categoriesResolvers from './categories.js';
 import productsResolvers from './products.js'
 import ordersResolvers from './orders.js';
-import cartResolvers from './cart.js'; 
+import cartResolvers from './cart.js';
 import paymentResolvers from './payment.js';
+import reviewsResolvers from './reviews.js';
+
 
 export default {
     Query: {
@@ -11,7 +13,8 @@ export default {
         ...categoriesResolvers.Query,
         ...productsResolvers.Query,
         ...cartResolvers.Query,
-        ...ordersResolvers.Query 
+        ...ordersResolvers.Query,
+        ...reviewsResolvers.Query
 
     },
     Mutation: {
@@ -21,7 +24,7 @@ export default {
         ...ordersResolvers.Mutation,
         ...cartResolvers.Mutation,
         ...paymentResolvers.Mutation,
-      
+        ...reviewsResolvers.Mutation
 
     },
     Subscription: {

@@ -1,3 +1,4 @@
+// client/src/pages/Home.jsx
 import { useState, useMemo } from 'react';
 import { useQuery } from '@apollo/client/react';
 import { gql } from '@apollo/client';
@@ -13,6 +14,8 @@ const GET_PRODUCTS = gql`
       price
       image
       stock
+      averageRating
+      reviewCount
       category {
         id
         name
@@ -280,6 +283,14 @@ export default function Home() {
                 <div className="badge badge-outline badge-sm mb-2">
                   {product.category.name}
                 </div>
+
+                {/* ⭐ Rating Display */}
+                {product.reviewCount > 0 && (
+                  <div className="flex items-center gap-1 text-sm mb-2">
+                    <span>⭐ {product.averageRating.toFixed(1)}</span>
+                    <span className="text-base-content/60">({product.reviewCount})</span>
+                  </div>
+                )}
 
                 <h2 className="card-title text-lg line-clamp-2 min-h-[3.5rem]">
                   {product.name}

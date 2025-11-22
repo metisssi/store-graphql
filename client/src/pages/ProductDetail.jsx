@@ -1,7 +1,10 @@
+// client/src/pages/ProductDetail.jsx
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation } from '@apollo/client/react';
 import { gql } from '@apollo/client';
 import { useState } from 'react';
+import ProductReviews from '../components/ProductReviews';
+import StarRating from '../components/StarRating';
 
 const GET_PRODUCT = gql`
   query GetProduct($productId: ID!) {
@@ -12,6 +15,8 @@ const GET_PRODUCT = gql`
       price
       image
       stock
+      averageRating
+      reviewCount
       category {
         id
         name
@@ -56,7 +61,7 @@ export default function ProductDetail() {
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
 
-  const { loading, error, data } = useQuery(GET_PRODUCT, {
+  const { loading, error, data, refetch } = useQuery(GET_PRODUCT, {
     variables: { productId }
   });
 
@@ -139,6 +144,16 @@ export default function ProductDetail() {
 
           {/* Product Name */}
           <h1 className="text-4xl font-bold">{product.name}</h1>
+
+          {/* ⭐ Rating Display - ДОБАВЛЕНО */}
+          {product.reviewCount > 0 && (
+            <div className="flex items-center gap-2">
+              <StarRating rating={product.averageRating} />
+              <span className="text-base-content/60">
+                ({product.reviewCount} reviews)
+              </span>
+            </div>
+          )}
 
           {/* Price */}
           <div className="flex items-baseline gap-3">
@@ -238,6 +253,12 @@ export default function ProductDetail() {
           </div>
         </div>
       </div>
+
+      {/* ⭐ Product Reviews Section - ДОБАВЛЕНО */}
+      <ProductReviews 
+        productId={productId} 
+        onReviewAdded={() => refetch()} 
+      />
     </div>
   );
 }
