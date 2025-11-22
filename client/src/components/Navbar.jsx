@@ -17,9 +17,9 @@ const GET_CART_COUNT = gql`
 export default function Navbar() {
   const { user, logout } = useAuth();
 
-  // Получаем количество товаров в корзине
+  // Получаем количество товаров в корзине (только для обычных пользователей)
   const { data: cartData } = useQuery(GET_CART_COUNT, {
-    skip: !user, // Не загружаем если пользователь не залогинен
+    skip: !user || user.role === 'admin', // 👈 Не загружаем для админа
   });
 
   const cartItemsCount = cartData?.getMyCart?.items?.reduce(
@@ -38,33 +38,34 @@ export default function Navbar() {
       <div className="flex-none gap-2">
         {user ? (
           <>
-            {/* Cart Link - НОВОЕ! */}
-            <Link to="/cart" className="btn btn-ghost btn-sm gap-2">
-              <div className="indicator">
-                <span className="text-xl">🛒</span>
-                {cartItemsCount > 0 && (
-                  <span className="indicator-item badge badge-primary badge-sm">
-                    {cartItemsCount}
-                  </span>
-                )}
-              </div>
-              Cart
-            </Link>
-
-            {/* Admin Link */}
-            {user.role === 'admin' && (
-              <Link to="/admin" className="btn btn-ghost btn-sm">
-                ⚙️ Admin Panel
-              </Link>
+            {/* User Links - только для обычных пользователей */}
+            {user.role !== 'admin' && (
+              <>
+                <Link to="/cart" className="btn btn-ghost btn-sm gap-2">
+                  <div className="indicator">
+                    <span className="text-xl">🛒</span>
+                    {cartItemsCount > 0 && (
+                      <span className="indicator-item badge badge-primary badge-sm">
+                        {cartItemsCount}
+                      </span>
+                    )}
+                  </div>
+                  Cart
+                </Link>
+                <Link to="/my-orders" className="btn btn-ghost btn-sm">
+                  📦 My Orders
+                </Link>
+              </>
             )}
-            {/* Admin Links */}
+
+            {/* Admin Links - только для админа */}
             {user.role === 'admin' && (
               <>
-                <Link to="/orders" className="btn btn-ghost btn-sm">
-                  📦 Orders
-                </Link>
                 <Link to="/admin" className="btn btn-ghost btn-sm">
-                  ⚙️ Products
+                  📦 Products
+                </Link>
+                <Link to="/orders" className="btn btn-ghost btn-sm">
+                  📋 Orders
                 </Link>
               </>
             )}

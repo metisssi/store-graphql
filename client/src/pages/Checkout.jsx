@@ -120,7 +120,7 @@ function CheckoutForm() {
       });
 
       alert('✅ Order placed successfully!');
-      navigate('/'); // Перенаправляем на главную
+      navigate('/my-orders'); // Перенаправляем на главную
 
     } catch (err) {
       console.error('Payment error:', err);
