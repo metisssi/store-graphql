@@ -58,7 +58,7 @@ const orderSchema = new Schema({
     // 📦 СТАТУС ЗАКАЗА
     status: {
         type: String,
-        enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
+        enum: ['pending', 'shipped', 'delivered', 'cancelled'],
         default: 'pending'
     },
     

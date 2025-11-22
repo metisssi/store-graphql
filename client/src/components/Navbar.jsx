@@ -16,7 +16,7 @@ const GET_CART_COUNT = gql`
 
 export default function Navbar() {
   const { user, logout } = useAuth();
-  
+
   // Получаем количество товаров в корзине
   const { data: cartData } = useQuery(GET_CART_COUNT, {
     skip: !user, // Не загружаем если пользователь не залогинен
@@ -34,7 +34,7 @@ export default function Navbar() {
           🛒 E-Commerce
         </Link>
       </div>
-      
+
       <div className="flex-none gap-2">
         {user ? (
           <>
@@ -57,12 +57,23 @@ export default function Navbar() {
                 ⚙️ Admin Panel
               </Link>
             )}
-            
+            {/* Admin Links */}
+            {user.role === 'admin' && (
+              <>
+                <Link to="/orders" className="btn btn-ghost btn-sm">
+                  📦 Orders
+                </Link>
+                <Link to="/admin" className="btn btn-ghost btn-sm">
+                  ⚙️ Products
+                </Link>
+              </>
+            )}
+
             <span className="text-sm">
-              Hi, {user.username}! 
+              Hi, {user.username}!
               {user.role === 'admin' && <span className="badge badge-primary ml-2">Admin</span>}
             </span>
-            
+
             <button onClick={logout} className="btn btn-ghost btn-sm">
               Logout
             </button>

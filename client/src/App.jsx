@@ -108,6 +108,15 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
+
+                    <Route
+                        path="/orders"
+                        element={
+                            <AdminRoute>
+                                <Orders />
+                            </AdminRoute>
+                        }
+                    />
                 </Routes>
             </main>
         </div>
