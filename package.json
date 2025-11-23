@@ -1,12 +1,13 @@
 {
   "name": "ecommerce-fullstack",
   "version": "1.0.0",
+  "description": "Full-stack e-commerce application",
   "scripts": {
     "install-backend": "cd backend && npm install",
     "install-client": "cd client && npm install",
     "build-client": "cd client && npm run build",
-    "start": "cd backend && npm start",
-    "postinstall": "npm run install-backend && npm run install-client && npm run build-client"
+    "start": "cd backend && node index.js",
+    "heroku-postbuild": "npm run install-backend && npm run install-client && npm run build-client"
   },
   "engines": {
     "node": "18.x"
