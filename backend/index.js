@@ -41,22 +41,26 @@ const server = new ApolloServer({
 async function startServer() {
     await server.start();
     
+    // Применяем GraphQL middleware
     server.applyMiddleware({ 
-        app, 
+        app,
+        path: '/graphql',
         cors: {
-            origin: process.env.CLIENT_URL || '*',
+            origin: '*',
             credentials: true
         }
     });
 
-    // 👇 ВАЖНО: Отдаем React build в production
+    // 👇 ВАЖНО: Отдаем React build ТОЛЬКО в production
     if (process.env.NODE_ENV === 'production') {
         const clientBuildPath = path.join(__dirname, '../client/build');
         
-        // Отдаем статические файлы React
+        console.log('📁 Serving React from:', clientBuildPath); // 👈 Добавь для отладки
+        
+        // Отдаем статические файлы
         app.use(express.static(clientBuildPath));
         
-        // Все остальные запросы отправляем на React Router
+        // Все остальные запросы (кроме /graphql) отправляем на React
         app.get('*', (req, res) => {
             res.sendFile(path.join(clientBuildPath, 'index.html'));
         });
