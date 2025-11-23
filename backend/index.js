@@ -1,42 +1,81 @@
-import pkg from 'apollo-server';
+import pkg from 'apollo-server-express';
 const { ApolloServer } = pkg;
 
 import { PubSub } from 'graphql-subscriptions';
-
-
+import express from 'express';
+import { createServer } from 'http';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 import typeDefs from './graphql/typeDefs.js';
 import resolvers from './graphql/resolvers/index.js';
 
 dotenv.config();
 
-const pubsub = new PubSub();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+const pubsub = new PubSub();
 const PORT = process.env.PORT || 5000;
 
+// Создаем Express app
+const app = express();
+const httpServer = createServer(app);
+
+// Создаем Apollo Server
 const server = new ApolloServer({
     typeDefs,
     resolvers,
     context: ({ req }) => ({ req, pubsub }),
     introspection: true,
-    playground: true,
-    cors: {
-        origin: process.env.CLIENT_URL || '*',
-        credentials: true
-    }
+    plugins: [{
+        async serverWillStart() {
+            console.log('🚀 Apollo Server starting...');
+        }
+    }]
 });
 
-mongoose
-    .connect(process.env.MONGODB)
-    .then(() => {
-        console.log('✅ MongoDB Connected');
-        return server.listen({ port: PORT });
-    })
-    .then(res => {
-        console.log(`🚀 Server running at ${res.url}`);
-    })
-    .catch(err => {
-        console.error('❌ Error:', err);
+// Запускаем сервер
+async function startServer() {
+    await server.start();
+    
+    server.applyMiddleware({ 
+        app, 
+        cors: {
+            origin: process.env.CLIENT_URL || '*',
+            credentials: true
+        }
     });
+
+    // 👇 ВАЖНО: Отдаем React build в production
+    if (process.env.NODE_ENV === 'production') {
+        const clientBuildPath = path.join(__dirname, '../client/build');
+        
+        // Отдаем статические файлы React
+        app.use(express.static(clientBuildPath));
+        
+        // Все остальные запросы отправляем на React Router
+        app.get('*', (req, res) => {
+            res.sendFile(path.join(clientBuildPath, 'index.html'));
+        });
+    }
+
+    // Подключаемся к MongoDB и запускаем сервер
+    mongoose
+        .connect(process.env.MONGODB)
+        .then(() => {
+            console.log('✅ MongoDB Connected');
+            return httpServer.listen(PORT);
+        })
+        .then(() => {
+            console.log(`🚀 Server running on port ${PORT}`);
+            console.log(`📊 GraphQL endpoint: http://localhost:${PORT}${server.graphqlPath}`);
+        })
+        .catch(err => {
+            console.error('❌ Error:', err);
+        });
+}
+
+startServer();
