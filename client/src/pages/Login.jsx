@@ -30,10 +30,10 @@ export default function Login() {
     onCompleted: (data) => {
      
       
-      // 1. Сохраняем пользователя
+      // 1. Save user
       login(data.login);
       
-      // 2. Жёсткий редирект через window.location
+      // 2. Hard redirect via window.location
       setTimeout(() => {
         if (data.login.role === 'admin') {
       
@@ -42,7 +42,7 @@ export default function Login() {
           
           window.location.href = '/';
         }
-      }, 100);  // Небольшая задержка чтобы login() успел сработать
+      }, 100);  // Small delay so login() has time to execute
     }
   });
 
@@ -68,8 +68,8 @@ export default function Login() {
                 <span className="text-3xl">🛒</span>
               </div>
             </div>
-            <h2 className="text-3xl font-bold">Добро пожаловать!</h2>
-            <p className="text-base-content/60 mt-2">Войдите в свой аккаунт</p>
+            <h2 className="text-3xl font-bold">Welcome!</h2>
+            <p className="text-base-content/60 mt-2">Log in to your account</p>
           </div>
           
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -82,7 +82,7 @@ export default function Login() {
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
-                placeholder="Введите username"
+                placeholder="Enter username"
                 className="input input-bordered w-full"
                 required
               />
@@ -90,7 +90,7 @@ export default function Login() {
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Пароль</span>
+                <span className="label-text font-medium">Password</span>
               </label>
               <div className="relative">
                 <input
@@ -98,7 +98,7 @@ export default function Login() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="Введите пароль"
+                  placeholder="Enter password"
                   className="input input-bordered w-full pr-10"
                   required
                 />
@@ -127,22 +127,22 @@ export default function Login() {
                 {loading ? (
                   <>
                     <span className="loading loading-spinner"></span>
-                    Вход...
+                    Logging in...
                   </>
                 ) : (
-                  'Войти'
+                  'Log In'
                 )}
               </button>
             </div>
           </form>
 
-          <div className="divider">ИЛИ</div>
+          <div className="divider">OR</div>
 
           <div className="text-center">
             <p className="text-sm text-base-content/60">
-              Нет аккаунта?{' '}
+              Don't have an account?{' '}
               <Link to="/register" className="link link-primary font-medium">
-                Зарегистрироваться
+                Sign Up
               </Link>
             </p>
           </div>

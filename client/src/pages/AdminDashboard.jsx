@@ -73,26 +73,24 @@ export default function AdminDashboard() {
     image: ''
   });
 
-  // Queries
   const { data: categoriesData, loading: categoriesLoading } = useQuery(GET_CATEGORIES);
   const { data: productsData, loading: productsLoading } = useQuery(GET_PRODUCTS);
 
-  // Mutations
   const [createCategory, { loading: createCategoryLoading }] = useMutation(CREATE_CATEGORY, {
     refetchQueries: [{ query: GET_CATEGORIES }],
     onCompleted: () => {
       setCategoryName('');
-      alert('✅ Категория создана!');
+      alert('✅ Category created!');
     },
     onError: (error) => {
-      alert('❌ Ошибка: ' + error.message);
+      alert('❌ Error: ' + error.message);
     }
   });
 
   const [deleteCategory] = useMutation(DELETE_CATEGORY, {
     refetchQueries: [{ query: GET_CATEGORIES }],
     onCompleted: () => {
-      alert('✅ Категория удалена!');
+      alert('✅ Category deleted!');
     },
     onError: (error) => {
       alert('❌ ' + error.message);
@@ -110,17 +108,17 @@ export default function AdminDashboard() {
         stock: '',
         image: ''
       });
-      alert('✅ Товар создан!');
+      alert('✅ Product created!');
     },
     onError: (error) => {
-      alert('❌ Ошибка: ' + error.message);
+      alert('❌ Error: ' + error.message);
     }
   });
 
   const [deleteProduct] = useMutation(DELETE_PRODUCT, {
     refetchQueries: [{ query: GET_PRODUCTS }],
     onCompleted: () => {
-      alert('✅ Товар удален!');
+      alert('✅ Product deleted!');
     },
     onError: (error) => {
       alert('❌ ' + error.message);
@@ -134,7 +132,7 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteCategory = (categoryId, categoryName) => {
-    if (window.confirm(`Удалить категорию "${categoryName}"?`)) {
+    if (window.confirm(`Delete category "${categoryName}"?`)) {
       deleteCategory({ variables: { categoryId } });
     }
   };
@@ -156,7 +154,7 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteProduct = (productId, productName) => {
-    if (window.confirm(`Удалить товар "${productName}"?`)) {
+    if (window.confirm(`Delete product "${productName}"?`)) {
       deleteProduct({ variables: { productId } });
     }
   };
@@ -172,8 +170,8 @@ export default function AdminDashboard() {
     <div>
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">⚙️ Админ панель</h1>
-        <p className="text-base-content/60">Управление товарами и категориями</p>
+        <h1 className="text-4xl font-bold mb-2">⚙️ Admin Panel</h1>
+        <p className="text-base-content/60">Manage products and categories</p>
       </div>
 
       {/* Tabs */}
@@ -182,28 +180,29 @@ export default function AdminDashboard() {
           className={`tab ${activeTab === 'products' ? 'tab-active' : ''}`}
           onClick={() => setActiveTab('products')}
         >
-          📦 Товары
+          📦 Products
         </a>
         <a 
           className={`tab ${activeTab === 'categories' ? 'tab-active' : ''}`}
           onClick={() => setActiveTab('categories')}
         >
-          🏷️ Категории
+          🏷️ Categories
         </a>
       </div>
 
       {/* Products Tab */}
       {activeTab === 'products' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
           {/* Create Product Form */}
           <div className="card bg-base-100 shadow-xl">
             <div className="card-body">
-              <h2 className="card-title">➕ Создать товар</h2>
+              <h2 className="card-title">➕ Create Product</h2>
               
               <form onSubmit={handleCreateProduct} className="space-y-4">
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Название</span>
+                    <span className="label-text">Name</span>
                   </label>
                   <input
                     type="text"
@@ -217,7 +216,7 @@ export default function AdminDashboard() {
 
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Описание</span>
+                    <span className="label-text">Description</span>
                   </label>
                   <textarea
                     name="description"
@@ -232,7 +231,7 @@ export default function AdminDashboard() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="form-control">
                     <label className="label">
-                      <span className="label-text">Цена ($)</span>
+                      <span className="label-text">Price ($)</span>
                     </label>
                     <input
                       type="number"
@@ -247,7 +246,7 @@ export default function AdminDashboard() {
 
                   <div className="form-control">
                     <label className="label">
-                      <span className="label-text">Количество</span>
+                      <span className="label-text">Stock</span>
                     </label>
                     <input
                       type="number"
@@ -262,7 +261,7 @@ export default function AdminDashboard() {
 
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Категория</span>
+                    <span className="label-text">Category</span>
                   </label>
                   <select
                     name="categoryId"
@@ -271,7 +270,7 @@ export default function AdminDashboard() {
                     className="select select-bordered"
                     required
                   >
-                    <option value="">Выберите категорию</option>
+                    <option value="">Select category</option>
                     {categoriesData?.getCategories.map((cat) => (
                       <option key={cat.id} value={cat.id}>
                         {cat.name}
@@ -282,7 +281,7 @@ export default function AdminDashboard() {
 
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">URL изображения</span>
+                    <span className="label-text">Image URL</span>
                   </label>
                   <input
                     type="url"
@@ -294,13 +293,13 @@ export default function AdminDashboard() {
                   />
                   <label className="label">
                     <span className="label-text-alt">
-                      💡 <a href="https://imgbb.com/" target="_blank" rel="noreferrer" className="link link-primary">Загрузить на ImgBB</a>
+                      💡 <a href="https://imgbb.com/" target="_blank" rel="noreferrer" className="link link-primary">Upload to ImgBB</a>
                     </span>
                   </label>
                   
                   {productForm.image && (
                     <div className="mt-2">
-                      <p className="text-sm mb-1">Превью:</p>
+                      <p className="text-sm mb-1">Preview:</p>
                       <img 
                         src={productForm.image} 
                         alt="Preview" 
@@ -318,7 +317,7 @@ export default function AdminDashboard() {
                   className="btn btn-primary w-full"
                   disabled={createProductLoading}
                 >
-                  {createProductLoading ? 'Создание...' : '✨ Создать товар'}
+                  {createProductLoading ? 'Creating...' : '✨ Create Product'}
                 </button>
               </form>
             </div>
@@ -327,7 +326,7 @@ export default function AdminDashboard() {
           {/* Products List */}
           <div className="card bg-base-100 shadow-xl">
             <div className="card-body">
-              <h2 className="card-title">📋 Список товаров ({productsData?.getProducts.length || 0})</h2>
+              <h2 className="card-title">📋 Products List ({productsData?.getProducts.length || 0})</h2>
               
               {productsLoading ? (
                 <div className="flex justify-center py-8">
@@ -373,22 +372,23 @@ export default function AdminDashboard() {
       {/* Categories Tab */}
       {activeTab === 'categories' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
           {/* Create Category Form */}
           <div className="card bg-base-100 shadow-xl">
             <div className="card-body">
-              <h2 className="card-title">➕ Создать категорию</h2>
+              <h2 className="card-title">➕ Create Category</h2>
               
               <form onSubmit={handleCreateCategory} className="space-y-4">
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Название категории</span>
+                    <span className="label-text">Category name</span>
                   </label>
                   <input
                     type="text"
                     value={categoryName}
                     onChange={(e) => setCategoryName(e.target.value)}
                     className="input input-bordered"
-                    placeholder="Например: Электроника, Одежда, Книги"
+                    placeholder="Example: Electronics, Clothing, Books"
                     required
                   />
                 </div>
@@ -398,15 +398,14 @@ export default function AdminDashboard() {
                   className="btn btn-primary w-full"
                   disabled={createCategoryLoading}
                 >
-                  {createCategoryLoading ? 'Создание...' : '✨ Создать категорию'}
+                  {createCategoryLoading ? 'Creating...' : '✨ Create Category'}
                 </button>
               </form>
 
-              {/* Примеры */}
               <div className="mt-4">
-                <p className="text-sm text-base-content/60 mb-2">💡 Примеры категорий:</p>
+                <p className="text-sm text-base-content/60 mb-2">💡 Example categories:</p>
                 <div className="flex flex-wrap gap-2">
-                  {['Электроника', 'Одежда', 'Книги', 'Спорт', 'Дом'].map(cat => (
+                  {['Electronics', 'Clothing', 'Books', 'Sports', 'Home'].map(cat => (
                     <button 
                       key={cat}
                       onClick={() => setCategoryName(cat)}
@@ -423,7 +422,7 @@ export default function AdminDashboard() {
           {/* Categories List */}
           <div className="card bg-base-100 shadow-xl">
             <div className="card-body">
-              <h2 className="card-title">📋 Список категорий ({categoriesData?.getCategories.length || 0})</h2>
+              <h2 className="card-title">📋 Categories List ({categoriesData?.getCategories.length || 0})</h2>
               
               {categoriesLoading ? (
                 <div className="flex justify-center py-8">
@@ -437,7 +436,7 @@ export default function AdminDashboard() {
                         <div>
                           <h3 className="font-bold text-lg">🏷️ {category.name}</h3>
                           <p className="text-sm text-base-content/60">
-                            Создана: {new Date(category.createdAt).toLocaleDateString('ru-RU')}
+                            Created: {new Date(category.createdAt).toLocaleDateString('en-US')}
                           </p>
                         </div>
                         <button 
@@ -452,7 +451,7 @@ export default function AdminDashboard() {
 
                   {categoriesData?.getCategories.length === 0 && (
                     <div className="text-center py-8">
-                      <p className="text-base-content/60">Категорий пока нет</p>
+                      <p className="text-base-content/60">There are no categories yet</p>
                     </div>
                   )}
                 </div>

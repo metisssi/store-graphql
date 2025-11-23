@@ -47,11 +47,11 @@ export default function MyOrders() {
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'pending': return '⏳ Ожидает обработки';
-      case 'processing': return '🔄 В обработке';
-      case 'shipped': return '🚚 Отправлен';
-      case 'delivered': return '✅ Доставлен';
-      case 'cancelled': return '❌ Отменён';
+      case 'pending': return '⏳ Pending';
+      case 'processing': return '🔄 Processing';
+      case 'shipped': return '🚚 Shipped';
+      case 'delivered': return '✅ Delivered';
+      case 'cancelled': return '❌ Cancelled';
       default: return status;
     }
   };
@@ -67,7 +67,7 @@ export default function MyOrders() {
   if (error) {
     return (
       <div className="alert alert-error">
-        <span>Ошибка загрузки заказов: {error.message}</span>
+        <span>Error loading orders: {error.message}</span>
       </div>
     );
   }
@@ -78,11 +78,11 @@ export default function MyOrders() {
     <div>
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">📦 Мои заказы</h1>
+        <h1 className="text-4xl font-bold mb-2">📦 My Orders</h1>
         <p className="text-base-content/60">
           {orders.length === 0 
-            ? 'У вас пока нет заказов' 
-            : `Всего заказов: ${orders.length}`}
+            ? 'You have no orders yet' 
+            : `Total orders: ${orders.length}`}
         </p>
       </div>
 
@@ -90,15 +90,15 @@ export default function MyOrders() {
         /* Empty State */
         <div className="text-center py-16">
           <div className="text-6xl mb-4">📭</div>
-          <h3 className="text-2xl font-bold mb-2">Заказов пока нет</h3>
+          <h3 className="text-2xl font-bold mb-2">No orders yet</h3>
           <p className="text-base-content/60 mb-6">
-            Самое время сделать первый заказ!
+            Time to make your first order!
           </p>
           <button
             onClick={() => navigate('/')}
             className="btn btn-primary"
           >
-            Перейти к покупкам
+            Go Shopping
           </button>
         </div>
       ) : (
@@ -111,10 +111,10 @@ export default function MyOrders() {
                 <div className="flex flex-wrap justify-between items-start gap-4 mb-4">
                   <div>
                     <h3 className="font-bold text-lg">
-                      Заказ #{order.id.slice(-8)}
+                      Order #{order.id.slice(-8)}
                     </h3>
                     <p className="text-sm text-base-content/60">
-                      {new Date(order.createdAt).toLocaleDateString('ru-RU', {
+                      {new Date(order.createdAt).toLocaleDateString('en-US', {
                         day: 'numeric',
                         month: 'long',
                         year: 'numeric',
@@ -131,7 +131,7 @@ export default function MyOrders() {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   {/* Order Items */}
                   <div className="lg:col-span-2">
-                    <h4 className="font-semibold mb-3">🛍️ Товары</h4>
+                    <h4 className="font-semibold mb-3">🛍️ Items</h4>
                     <div className="space-y-3">
                       {order.items.map((item, idx) => (
                         <div key={idx} className="flex gap-3 bg-base-200 p-3 rounded-lg">
@@ -160,7 +160,7 @@ export default function MyOrders() {
                   {/* Order Info */}
                   <div>
                     {/* Shipping Address */}
-                    <h4 className="font-semibold mb-2">📍 Адрес доставки</h4>
+                    <h4 className="font-semibold mb-2">📍 Shipping Address</h4>
                     <div className="text-sm space-y-1 mb-4 bg-base-200 p-3 rounded-lg">
                       <p className="font-medium">{order.shippingAddress.fullName}</p>
                       <p>{order.shippingAddress.address}</p>
@@ -174,12 +174,12 @@ export default function MyOrders() {
                     {/* Order Total */}
                     <div className="bg-primary/10 p-4 rounded-lg">
                       <div className="flex justify-between text-lg font-bold">
-                        <span>Итого:</span>
+                        <span>Total:</span>
                         <span className="text-primary">${order.totalAmount.toFixed(2)}</span>
                       </div>
                       {order.isPaid && (
                         <p className="text-xs text-success mt-2">
-                          ✓ Оплачено {new Date(order.paidAt).toLocaleDateString('ru-RU')}
+                          ✓ Paid on {new Date(order.paidAt).toLocaleDateString('en-US')}
                         </p>
                       )}
                     </div>

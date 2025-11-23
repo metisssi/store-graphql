@@ -124,6 +124,16 @@ export default function OrdersDashboard() {
     ? orders 
     : orders.filter(order => order.status === selectedStatus);
 
+  // Status options for filter
+  const statusOptions = [
+    { value: 'all', label: 'All', count: orders.length },
+    { value: 'pending', label: 'Pending', count: orders.filter(o => o.status === 'pending').length },
+    { value: 'processing', label: 'Processing', count: orders.filter(o => o.status === 'processing').length },
+    { value: 'shipped', label: 'Shipped', count: orders.filter(o => o.status === 'shipped').length },
+    { value: 'delivered', label: 'Delivered', count: orders.filter(o => o.status === 'delivered').length },
+    { value: 'cancelled', label: 'Cancelled', count: orders.filter(o => o.status === 'cancelled').length },
+  ];
+
   return (
     <div>
       {/* Header */}
@@ -134,38 +144,32 @@ export default function OrdersDashboard() {
         </p>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="tabs tabs-boxed mb-6">
-        <a 
-          className={`tab ${selectedStatus === 'all' ? 'tab-active' : ''}`}
-          onClick={() => setSelectedStatus('all')}
+      {/* Mobile Filter - Dropdown */}
+      <div className="md:hidden mb-6">
+        <select
+          className="select select-bordered w-full"
+          value={selectedStatus}
+          onChange={(e) => setSelectedStatus(e.target.value)}
         >
-          All ({orders.length})
-        </a>
-        <a 
-          className={`tab ${selectedStatus === 'pending' ? 'tab-active' : ''}`}
-          onClick={() => setSelectedStatus('pending')}
-        >
-          Pending ({orders.filter(o => o.status === 'pending').length})
-        </a>
-        <a 
-          className={`tab ${selectedStatus === 'processing' ? 'tab-active' : ''}`}
-          onClick={() => setSelectedStatus('processing')}
-        >
-          Processing ({orders.filter(o => o.status === 'processing').length})
-        </a>
-        <a 
-          className={`tab ${selectedStatus === 'shipped' ? 'tab-active' : ''}`}
-          onClick={() => setSelectedStatus('shipped')}
-        >
-          Shipped ({orders.filter(o => o.status === 'shipped').length})
-        </a>
-        <a 
-          className={`tab ${selectedStatus === 'delivered' ? 'tab-active' : ''}`}
-          onClick={() => setSelectedStatus('delivered')}
-        >
-          Delivered ({orders.filter(o => o.status === 'delivered').length})
-        </a>
+          {statusOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label} ({option.count})
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Desktop Filter - Tabs */}
+      <div className="hidden md:block tabs tabs-boxed mb-6">
+        {statusOptions.map((option) => (
+          <a
+            key={option.value}
+            className={`tab ${selectedStatus === option.value ? 'tab-active' : ''}`}
+            onClick={() => setSelectedStatus(option.value)}
+          >
+            {option.label} ({option.count})
+          </a>
+        ))}
       </div>
 
       {/* Orders List */}
@@ -183,9 +187,9 @@ export default function OrdersDashboard() {
         <div className="space-y-4">
           {filteredOrders.map((order) => (
             <div key={order.id} className="card bg-base-100 shadow-xl">
-              <div className="card-body">
+              <div className="card-body p-4 md:p-6">
                 {/* Order Header */}
-                <div className="flex justify-between items-start mb-4">
+                <div className="flex flex-wrap justify-between items-start gap-2 mb-4">
                   <div>
                     <h3 className="font-bold text-lg">
                       Order #{order.id.slice(-8)}
@@ -194,11 +198,11 @@ export default function OrdersDashboard() {
                       {new Date(order.createdAt).toLocaleString()}
                     </p>
                   </div>
-                  <div className="text-right">
+                  <div className="flex flex-col items-end gap-1">
                     <div className={`badge ${getStatusBadgeClass(order.status)} badge-lg`}>
                       {order.status.toUpperCase()}
                     </div>
-                    <div className={`badge ${getPaymentBadgeClass(order.paymentStatus)} badge-sm mt-1`}>
+                    <div className={`badge ${getPaymentBadgeClass(order.paymentStatus)} badge-sm`}>
                       {order.paymentStatus}
                     </div>
                   </div>
@@ -253,7 +257,25 @@ export default function OrdersDashboard() {
                   {/* Status Change */}
                   <div>
                     <h4 className="font-semibold mb-2">🔄 Change Status</h4>
-                    <div className="space-y-2">
+                    
+                    {/* Mobile: Dropdown */}
+                    <div className="md:hidden mb-3">
+                      <select
+                        className="select select-bordered select-sm w-full"
+                        value={order.status}
+                        onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                        disabled={order.status === 'delivered'}
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                      </select>
+                    </div>
+
+                    {/* Desktop: Buttons */}
+                    <div className="hidden md:block space-y-2">
                       <button
                         onClick={() => handleStatusChange(order.id, 'processing')}
                         className="btn btn-info btn-sm btn-block"

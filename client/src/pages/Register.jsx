@@ -64,8 +64,8 @@ export default function Register() {
                 <span className="text-3xl">✨</span>
               </div>
             </div>
-            <h2 className="text-3xl font-bold">Создать аккаунт</h2>
-            <p className="text-base-content/60 mt-2">Присоединяйтесь к нам!</p>
+            <h2 className="text-3xl font-bold">Create Account</h2>
+            <p className="text-base-content/60 mt-2">Join us today!</p>
           </div>
           
           {/* Form */}
@@ -80,7 +80,7 @@ export default function Register() {
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
-                placeholder="Придумайте username"
+                placeholder="Choose a username"
                 className="input input-bordered w-full"
                 required
               />
@@ -105,7 +105,7 @@ export default function Register() {
             {/* Password */}
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Пароль</span>
+                <span className="label-text font-medium">Password</span>
               </label>
               <div className="relative">
                 <input
@@ -113,7 +113,7 @@ export default function Register() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="Минимум 6 символов"
+                  placeholder="Minimum 6 characters"
                   className="input input-bordered w-full pr-10"
                   required
                   minLength={6}
@@ -131,7 +131,7 @@ export default function Register() {
             {/* Confirm Password */}
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Подтвердите пароль</span>
+                <span className="label-text font-medium">Confirm Password</span>
               </label>
               <div className="relative">
                 <input
@@ -139,7 +139,7 @@ export default function Register() {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  placeholder="Повторите пароль"
+                  placeholder="Repeat password"
                   className="input input-bordered w-full pr-10"
                   required
                 />
@@ -158,8 +158,8 @@ export default function Register() {
               <label className="label cursor-pointer justify-start gap-2">
                 <input type="checkbox" className="checkbox checkbox-primary" required />
                 <span className="label-text text-sm">
-                  Я согласен с{' '}
-                  <a href="#" className="link link-primary">условиями использования</a>
+                  I agree to the{' '}
+                  <a href="#" className="link link-primary">terms of service</a>
                 </span>
               </label>
             </div>
@@ -184,24 +184,24 @@ export default function Register() {
                 {loading ? (
                   <>
                     <span className="loading loading-spinner"></span>
-                    Регистрация...
+                    Signing up...
                   </>
                 ) : (
-                  'Зарегистрироваться'
+                  'Sign Up'
                 )}
               </button>
             </div>
           </form>
 
           {/* Divider */}
-          <div className="divider">ИЛИ</div>
+          <div className="divider">OR</div>
 
           {/* Login Link */}
           <div className="text-center">
             <p className="text-sm text-base-content/60">
-              Уже есть аккаунт?{' '}
+              Already have an account?{' '}
               <Link to="/login" className="link link-primary font-medium">
-                Войти
+                Log In
               </Link>
             </p>
           </div>
